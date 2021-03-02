@@ -6,36 +6,40 @@ using Matrix = std::vector<std::vector<double>>;
 class BrownRobinsonAlgorithm {
 
 private:
-	Matrix m_matrix;
+	Matrix m_matrix; // исходная матрица
 
-	double				m_error;
-	std::vector<Step>	m_steps;
-	std::vector<double>	m_prevFirstPlayerScores;
-	std::vector<double>	m_prevSecondPlayerScores;
-	int					m_firstPlayerStrategy;
-	int					m_secondPlayerStrategy;
+	
+	std::vector<Step>	m_steps; // вектор шагов метода
+	std::vector<double>	m_prevFirstPlayerScores; // текущие значения первого игрока
+	std::vector<double>	m_prevSecondPlayerScores; // текущие значения второго игрока
+	int					m_firstPlayerStrategy; // текущая стратегий первого игрока
+	int					m_secondPlayerStrategy;  // текущая стратегий второго игрока
+	double				m_error; // текущая погрешнность
 
-	int					m_maxSteps;
-	double				m_finalError;
-	double				m_minAvgUpperBound;
-	double				m_maxAvgLowerBound;
-	int					m_totalSteps;
+	int					m_maxSteps; // максимальное количество шагов
+	double				m_finalError; // конечная погрешность
+	double				m_minAvgUpperBound; // минимальное среднее значение верхней оценки цены игры
+	double				m_maxAvgLowerBound; // максимальное среднее значение нижней оценки цены игры
+	int					m_totalSteps; // конечное количество шагов алгоритма
 
-	int		GetFirstPlayerStrategy();
-	int		GetSecondPlayerStrategy();
-	void	Solve();
-	void	GetAnswer();
-	void	SaveErrorPlot();
-	void	SaveGameValuePlot();
-	bool	SaveTableToFile();
+	std::vector<double> m_firstPlayerAnswer; // смешанные стратегии 1ого игрока
+	std::vector<double> m_secondPlayerAnswer; // смешанные стратегии 2ого игрока
 
-	std::vector<double> m_firstPlayerAnswer;
-	std::vector<double> m_secondPlayerAnswer;
+	int		GetFirstPlayerStrategy(); // вычисление следующей стратегии 1ого игрока
+	int		GetSecondPlayerStrategy(); // вычисление следующей стратегии 2ого игрока
+
+	void	Solve(); // запуск алгоритма
+	void	GetAnswer(); // получение ответа
+	void	SaveErrorPlot(); // сохранение графика ошибки
+	void	SaveGameValuePlot(); // сохранение графика цены игры
+	bool	SaveTableToFile(); // сохранение таблицы метода
+
+	
 public:
 	BrownRobinsonAlgorithm(Matrix matrix, int maxSteps, double error);
 	~BrownRobinsonAlgorithm() {}
 
-	void iSolve();
-	void iPrintAnswer();
-	void iSavePlots();
+	void iSolve(); // запуск алгоритма
+	void iPrintAnswer(); // вывод результата в консоль
+	void iSavePlots(); // сохранение графиков в файл
 };

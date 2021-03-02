@@ -7,6 +7,7 @@
 
 using Matrix = std::vector<std::vector<double>>;
 
+// Функция чтения матрицы из файла
 Matrix ReadFromFile(std::string filename) {
 	Matrix mat;
 	std::ifstream ifs(filename);
@@ -26,7 +27,6 @@ Matrix ReadFromFile(std::string filename) {
 		}
 		mat.push_back(tempRow);
 	}
-
 	return mat;
 }
 
