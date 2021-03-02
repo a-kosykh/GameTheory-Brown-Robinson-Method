@@ -13,7 +13,7 @@ Matrix ReadFromFile(std::string filename) {
 	if (!ifs.is_open()) {
 		throw std::runtime_error("Can't open file!");
 	}
-	
+
 	std::string tempStr;
 	double tempDouble;
 

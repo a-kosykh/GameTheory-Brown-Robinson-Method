@@ -23,8 +23,8 @@ void Step::Print()
 	}
 
 	std::cout << std::setw(4) << printNumberStep;
-	std::cout << std::setw(2) << firstPlayerStrategy;
-	std::cout << std::setw(2) << secondPlayerStrategy;
+	std::cout << std::setw(2) << firstPlayerStrategy + 1;
+	std::cout << std::setw(2) << secondPlayerStrategy + 1;
 	for (const auto& iter : firstPlayerScores) {
 		std::cout << std::fixed << std::setprecision(0) << std::setw(6) << iter;
 	}
