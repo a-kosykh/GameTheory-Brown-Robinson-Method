@@ -16,7 +16,6 @@ private:
 	int					m_secondPlayerStrategy;  // текущая стратегий второго игрока
 	double				m_error; // текущая погрешнность
 
-	int					m_maxSteps; // максимальное количество шагов
 	double				m_finalError; // конечная погрешность
 	double				m_minAvgUpperBound; // минимальное среднее значение верхней оценки цены игры
 	double				m_maxAvgLowerBound; // максимальное среднее значение нижней оценки цены игры
@@ -36,7 +35,7 @@ private:
 
 	
 public:
-	BrownRobinsonAlgorithm(Matrix matrix, int maxSteps, double error);
+	BrownRobinsonAlgorithm(Matrix matrix, double error);
 	~BrownRobinsonAlgorithm() {}
 
 	void iSolve(); // запуск алгоритма

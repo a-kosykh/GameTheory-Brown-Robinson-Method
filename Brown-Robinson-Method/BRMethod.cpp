@@ -8,10 +8,11 @@
 #include "supportLib.hpp"
 
 
-BrownRobinsonAlgorithm::BrownRobinsonAlgorithm(Matrix matrix, int maxSteps, double error)
+BrownRobinsonAlgorithm::BrownRobinsonAlgorithm(Matrix matrix, double error)
 {
+	// значения по умолчанию
+	
 	m_matrix = matrix;
-	m_maxSteps = maxSteps;
 	m_error = error;
 	m_firstPlayerStrategy = 0;
 	m_secondPlayerStrategy = 0;
@@ -30,6 +31,8 @@ BrownRobinsonAlgorithm::BrownRobinsonAlgorithm(Matrix matrix, int maxSteps, doub
 
 int BrownRobinsonAlgorithm::GetFirstPlayerStrategy()
 {
+	// определение наилучшей стратегии первого игрока
+	// при нескольких возможных стратегиях, выбирается первый
 	std::vector<int> indexesOfMaxElements;
 	int maxElement = *std::max_element(m_prevFirstPlayerScores.begin(), m_prevFirstPlayerScores.end());
 	for (auto iter = m_prevFirstPlayerScores.begin(); iter != m_prevFirstPlayerScores.end(); iter++) {
@@ -39,25 +42,12 @@ int BrownRobinsonAlgorithm::GetFirstPlayerStrategy()
 		}
 	}
 	return indexesOfMaxElements[0];
-
-
-	std::vector<int> indexes;
-	std::vector<double> maxValues;
-	for (const auto& iter : indexesOfMaxElements) {
-		std::vector<double> tempSecondPlayerScores;
-		for (size_t iter2 = 0; iter2 < m_prevSecondPlayerScores.size(); iter2++) {
-			tempSecondPlayerScores.push_back(m_prevSecondPlayerScores[iter2] + m_matrix[iter][iter2]);
-		}
-		indexes.push_back(iter);
-		maxValues.push_back(*std::max_element(tempSecondPlayerScores.begin(), tempSecondPlayerScores.end()));
-	}
-	return indexes[std::distance(maxValues.begin(),
-		std::max_element(maxValues.begin(),
-			maxValues.end()))];
 }
 
 int BrownRobinsonAlgorithm::GetSecondPlayerStrategy()
 {
+	// определение наилучшей стратегии второго игрока
+	// при нескольких возможных стратегиях, выбирается первый
 	std::vector<int> indexesOfMinElements;
 	int minElement = *std::min_element(m_prevSecondPlayerScores.begin(), m_prevSecondPlayerScores.end());
 	for (auto iter = m_prevSecondPlayerScores.begin(); iter != m_prevSecondPlayerScores.end(); iter++) {
@@ -67,20 +57,6 @@ int BrownRobinsonAlgorithm::GetSecondPlayerStrategy()
 		}
 	}
 	return indexesOfMinElements[0];
-
-	std::vector<int> indexes;
-	std::vector<double> maxValues;
-	for (const auto& iter : indexesOfMinElements) {
-		std::vector<double> tempFirstPlayerScores;
-		for (size_t iter2 = 0; iter2 < m_prevFirstPlayerScores.size(); iter2++) {
-			tempFirstPlayerScores.push_back(m_prevFirstPlayerScores[iter2] + m_matrix[iter2][iter]);
-		}
-		indexes.push_back(iter);
-		maxValues.push_back(*std::max_element(tempFirstPlayerScores.begin(), tempFirstPlayerScores.end()));
-	}
-	return indexes[std::distance(maxValues.begin(),
-		std::min_element(maxValues.begin(),
-			maxValues.end()))];
 }
 
 void BrownRobinsonAlgorithm::GetAnswer()
@@ -112,22 +88,28 @@ void BrownRobinsonAlgorithm::GetAnswer()
 
 void BrownRobinsonAlgorithm::Solve()
 {
-	for (unsigned int stepIter = 0; stepIter < m_maxSteps; ++stepIter) {
+	int stepIter = 0;
+	while(true) {
+		// создание объекта "Шаг"
 		Step currentStep(stepIter);
 
+		// сохранение вычисленного номера стратегии для каждого из игроков из предыдущего шага
 		currentStep.firstPlayerStrategy = m_firstPlayerStrategy;
 		currentStep.secondPlayerStrategy = m_secondPlayerStrategy;
 
+		// прибавление к текущим значениям выигрыша выбранной стратегии
 		for (size_t iter = 0; iter < m_matrix.size(); ++iter) {
 			currentStep.firstPlayerScores.push_back(m_matrix[iter][currentStep.secondPlayerStrategy] + m_prevFirstPlayerScores[iter]);
 		}
-
 		for (size_t iter = 0; iter < m_matrix[currentStep.secondPlayerStrategy].size(); ++iter) {
 			currentStep.secondPlayerScores.push_back(m_matrix[currentStep.firstPlayerStrategy][iter] + m_prevSecondPlayerScores[iter]);
 		}
 
+		// вычисление оценок верхней и нижней цен игры
 		currentStep.avgUpperBound = *std::max_element(currentStep.firstPlayerScores.begin(), currentStep.firstPlayerScores.end()) / static_cast<double>(stepIter+1);
 		currentStep.avgLowerBound = *std::min_element(currentStep.secondPlayerScores.begin(), currentStep.secondPlayerScores.end()) / static_cast<double>(stepIter+1);
+		
+		// обновление максимальной нижней оценки и минимальной верхней
 		if (currentStep.avgUpperBound <= m_minAvgUpperBound) {
 			m_minAvgUpperBound = currentStep.avgUpperBound;
 		}
@@ -135,15 +117,20 @@ void BrownRobinsonAlgorithm::Solve()
 			m_maxAvgLowerBound = currentStep.avgLowerBound;
 		}
 
+		// вычисление ошибки
 		currentStep.error = m_minAvgUpperBound - m_maxAvgLowerBound;
 
+		// сохранание шага
 		m_steps.push_back(currentStep);
 
+		// выход из цикла при преодолении порога погрешнности
 		if (currentStep.error < m_error) {
 			m_totalSteps = currentStep.stepNumber;
 			m_finalError = currentStep.error;
 			break;
 		}
+		// иначе....
+		// обновление текущих выигрышей игроков и вычисление наилучшей стратегии
 		else {
 			m_prevFirstPlayerScores = currentStep.firstPlayerScores;
 			m_prevSecondPlayerScores = currentStep.secondPlayerScores;
@@ -151,8 +138,9 @@ void BrownRobinsonAlgorithm::Solve()
 			m_firstPlayerStrategy = GetFirstPlayerStrategy();
 			m_secondPlayerStrategy = GetSecondPlayerStrategy();
 		}
+		stepIter++;
 	}
-	GetAnswer();
+	GetAnswer(); // сохранение ответа
 }
 
 void BrownRobinsonAlgorithm::SaveErrorPlot()

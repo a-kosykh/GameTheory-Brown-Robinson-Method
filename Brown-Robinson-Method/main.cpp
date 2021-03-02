@@ -34,6 +34,9 @@ int main(int argc, char* argv[]) {
 	Matrix matrix;
 	try {
 		matrix = ReadFromFile(argv[1]);
+		if (matrix.size() != matrix[0].size()) {
+			throw std::runtime_error("Matrix is not quadratic!");
+		}
 	}
 	catch (std::runtime_error& e) { std::cerr << e.what() << std::endl; return 1; }
 	
@@ -45,7 +48,7 @@ int main(int argc, char* argv[]) {
 	std::cout << std::endl << std::endl;
 	double error = atof(argv[2]);
 	// Решение методом Брауна-Робинсона
-	BrownRobinsonAlgorithm br1(matrix, 10000, error);
+	BrownRobinsonAlgorithm br1(matrix, error);
 	br1.iSolve();
 	br1.iPrintAnswer();
 	br1.iSavePlots();
