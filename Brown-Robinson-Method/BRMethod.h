@@ -27,6 +27,7 @@ private:
 	void	GetAnswer();
 	void	SaveErrorPlot();
 	void	SaveGameValuePlot();
+	bool	SaveTableToFile();
 
 	std::vector<double> m_firstPlayerAnswer;
 	std::vector<double> m_secondPlayerAnswer;

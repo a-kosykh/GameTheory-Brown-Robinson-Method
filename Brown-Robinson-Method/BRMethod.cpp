@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <map>
 #include <limits.h>
+#include <fstream>
 #include "pbPlots.hpp"
 #include "supportLib.hpp"
 
@@ -227,6 +228,31 @@ void BrownRobinsonAlgorithm::SaveGameValuePlot()
 	DeleteImage(imageReference->image);
 }
 
+bool BrownRobinsonAlgorithm::SaveTableToFile()
+{
+	std::ofstream file;
+	file.open("BRTable.csv");
+	if (!file.is_open()) {
+		return false;
+	}
+
+	for (const auto& step : m_steps) {
+		file << "=\"" << step.stepNumber + 1 << "\";"
+			<< "=\"" << step.firstPlayerStrategy + 1 << "\";"
+			<< "=\"" << step.secondPlayerStrategy + 1 << "\";";
+		for (const auto& value : step.firstPlayerScores) {
+			file << "=\"" << value << "\";";
+		}
+		for (const auto& value : step.secondPlayerScores) {
+			file << "=\"" << value << "\";";
+		}
+		file << "=\"" << step.avgUpperBound << "\";"
+			<< "=\"" << step.avgLowerBound << "\";"
+			<< "=\"" << step.error << "\";" << std::endl;
+	}
+	return true;
+}
+
 void BrownRobinsonAlgorithm::iSolve()
 {
 	Solve();
@@ -238,13 +264,13 @@ void BrownRobinsonAlgorithm::iPrintAnswer()
 	for (auto& step : m_steps) {
 		step.Print();
 	}
-	std::cout << "x*: {";
+	std::cout << "x[" << m_steps.size() << "]:{";
 	for (const auto firstPlayerStrategy : m_firstPlayerAnswer) {
 		std::cout << firstPlayerStrategy << " ";
 	}
 	std::cout << "}" << std::endl;
 
-	std::cout << "y*: {";
+	std::cout << "y[" << m_steps.size() << "]:{";
 	for (const auto secondPlayerStrategy : m_secondPlayerAnswer) {
 		std::cout << secondPlayerStrategy << " ";
 	}
@@ -257,4 +283,5 @@ void BrownRobinsonAlgorithm::iSavePlots()
 {
 	SaveErrorPlot();
 	SaveGameValuePlot();
+	SaveTableToFile();
 }
