@@ -4,6 +4,7 @@
 #include <map>
 #include <limits.h>
 #include <fstream>
+#include <time.h>
 #include "pbPlots.hpp"
 #include "supportLib.hpp"
 
@@ -41,7 +42,10 @@ int BrownRobinsonAlgorithm::GetFirstPlayerStrategy()
 			maxElement = *iter;
 		}
 	}
-	return indexesOfMaxElements[0];
+
+	srand(time(NULL));
+	int randomIndex = rand() % indexesOfMaxElements.size();
+	return indexesOfMaxElements[randomIndex];
 }
 
 int BrownRobinsonAlgorithm::GetSecondPlayerStrategy()
@@ -56,7 +60,9 @@ int BrownRobinsonAlgorithm::GetSecondPlayerStrategy()
 			minElement = *iter;
 		}
 	}
-	return indexesOfMinElements[0];
+	srand(time(NULL));
+	int randomIndex = rand() % indexesOfMinElements.size();
+	return indexesOfMinElements[randomIndex];
 }
 
 void BrownRobinsonAlgorithm::GetAnswer()
@@ -84,6 +90,7 @@ void BrownRobinsonAlgorithm::GetAnswer()
 	for (const auto& strategy : secondPlayerStrategyCounts) {
 		m_secondPlayerAnswer.push_back(static_cast<double>(strategy.second) / (static_cast<double>(m_totalSteps) + 1));
 	}
+	m_gameValue = (m_minAvgUpperBound + m_maxAvgLowerBound) / 2;
 }
 
 void BrownRobinsonAlgorithm::Solve()
@@ -263,7 +270,8 @@ void BrownRobinsonAlgorithm::iPrintAnswer()
 		std::cout << secondPlayerStrategy << " ";
 	}
 	std::cout << "}" << std::endl;
-	std::cout << "error: " << m_finalError;
+	std::cout << "Error: " << m_finalError << std::endl;
+	std::cout << "Game value:" << m_gameValue << std::endl;
 	std::cout << std::endl;
 }
 

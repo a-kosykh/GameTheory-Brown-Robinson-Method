@@ -19,6 +19,7 @@ private:
 	double				m_finalError; // конечная погрешность
 	double				m_minAvgUpperBound; // минимальное среднее значение верхней оценки цены игры
 	double				m_maxAvgLowerBound; // максимальное среднее значение нижней оценки цены игры
+	double				m_gameValue; // цена игры
 	int					m_totalSteps; // конечное количество шагов алгоритма
 
 	std::vector<double> m_firstPlayerAnswer; // смешанные стратегии 1ого игрока
